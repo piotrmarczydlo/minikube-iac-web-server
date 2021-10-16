@@ -1,0 +1,8 @@
+apiVersion: v2
+appVersion: 0.0.1
+description: API Deployment
+keywords:
+- ecosia
+- web
+name: apiserver
+version: 0.0.1

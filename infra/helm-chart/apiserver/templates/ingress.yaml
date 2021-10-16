@@ -1,0 +1,25 @@
+{{- if .Values.ingress.enabled -}}
+{{- $serviceName := include "apiserver.fullname" . -}}
+{{- $servicePort := .Values.service.internalPort -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "apiserver.fullname" . }}
+  labels: {{- include "apiserver.standardLabels" . | nindent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /tree
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port: 
+                  number: {{ $servicePort }}
+{{- end -}}
