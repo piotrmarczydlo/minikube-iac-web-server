@@ -31,23 +31,29 @@ terraform-apply:
 
 # For Apple Silicon
 apple-m1-minikube-hack-enable:
-	@echo  "Enable workaround for Apple Silicon M1.\n"
-	@$(shell sudo ssh \
+	@echo  "Enable workaround for Apple Silicon M1.(Adds hosts record and starts tunnel)\n"
+	@echo 127.0.0.1 local.ecosia.org | sudo tee -a /etc/hosts > /dev/null
+	@sudo ssh \
 		-o UserKnownHostsFile=/dev/null \
 		-o StrictHostKeyChecking=no \
 		-N docker@127.0.0.1 \
 		-p $(PORT) \
 		-i /Users/$(USER)/.minikube/machines/minikube/id_rsa \
-		-L 80:127.0.0.1:80)
+		-L 80:127.0.0.1:80 & 
+	@sleep 1
 
 # For Apple Silicon
 apple-m1-minikube-hack-disable:
-	@echo "Disable workaround for Apple Silicon M1.\n"
+	@echo "Disable workaround for Apple Silicon M1. (Remove hosts record and stops tunnel)\n"
+	@sudo sed -i .bak '/^127\.0\.0\.1[[:space:]]local\.ecosia\.org/d' /etc/hosts
 	@ps ax | grep '[s]sh.*$(USER)' | awk '{print $$1}' | sudo xargs kill -9
 
 test-deployment:
-	@echo  "Make request to check is deployment.\n"
+	@echo  "Make request to check is deployment.\n\n"
 	curl local.ecosia.org/tree
+	@echo "\n\n"
+
+test-deployment-apple-m1: apple-m1-minikube-hack-enable test-deployment apple-m1-minikube-hack-disable
 
 development-setup:
 	@echo  "Setup development environment.\n"
