@@ -1,9 +1,12 @@
 # Web Server Project 
+Simple Project for local minikube web server deployment with:
+* Python, Flask
+* Terraform, Helm, Docker
 
 ## Project structure 
 ```
 infra               # IaC templates
-    - helm-chart    # Helm Charts
+  - helm-chart      # Helm Charts
 src                 # Application code
 ```
 
